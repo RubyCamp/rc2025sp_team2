@@ -25,6 +25,7 @@ vl53l0x.start_continuous(200)
 
 counter = 0
 loop do
+    distance = vl53l0x.read_range_continuous_millimeters
     if distance < 110
         catched = true
         
