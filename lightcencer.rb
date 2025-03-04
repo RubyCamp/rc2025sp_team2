@@ -15,8 +15,8 @@ lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
 
 
 while true do
-    if lux_left.read_raw < 100
-        if lux_right.read_raw < 100
+    if lux_left.read_raw < 200
+        if lux_right.read_raw < 200
 
             # 左右とも黒
             motor1_pwm1.duty( 50 )
@@ -46,7 +46,7 @@ while true do
             motor2_pwm2.duty( 50 )
             sleep 2
             motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 100 )
+            motor1_pwm2.duty( 90 )
 
             motor2_pwm1.duty( 50 )
             motor2_pwm2.duty( 90 )
@@ -58,7 +58,7 @@ while true do
             motor2_pwm2.duty( 50 )
         end
     else
-        if lux_right.read_raw < 100
+        if lux_right.read_raw < 200
             #　左が黒ではない右が黒
             motor1_pwm1.duty( 50 )
             motor1_pwm2.duty( 50 )
@@ -70,20 +70,20 @@ while true do
             motor1_pwm2.duty( 90 )
 
             motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 100 )
+            motor2_pwm2.duty( 90 )
             sleep 1
             motor1_pwm1.duty( 100 ) 
-            motor1_pwm2.duty( 20 ) 
-          
-            motor2_pwm1.duty( 100 ) 
-            motor2_pwm2.duty( 20 )
-        else
-            #　左右とも白
-            motor1_pwm1.duty( 50 ) 
-            motor1_pwm2.duty( 00 ) 
+            motor1_pwm2.duty( 50 ) 
           
             motor2_pwm1.duty( 50 ) 
-            motor2_pwm2.duty( 00 ) 
+            motor2_pwm2.duty( 50 )
+        else
+            #　左右とも白
+            motor1_pwm1.duty( 100 ) 
+            motor1_pwm2.duty( 50 ) 
+          
+            motor2_pwm1.duty( 100 ) 
+            motor2_pwm2.duty( 50 ) 
         end
     end
 
