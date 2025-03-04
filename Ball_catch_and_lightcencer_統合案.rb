@@ -27,6 +27,9 @@ servo2.pulse_width_us(1100)
 vl53l0x.init
 vl53l0x.start_continuous(1000)
 
+catched = false
+counter_for_servo = 0
+
 # メインループ
 while true do
     if lux_left.read_raw < 100
@@ -103,11 +106,26 @@ while true do
 
     distance = vl53l0x.read_range_continuous_millimeters
     if distance < 110
-        # サーボモーターの動作(閉脚)
-        servo1.pulse_width_us(1370)
-        servo2.pulse_width_us(1630)
+        catched = true
+        
+        if counter_for_servo == 0
+            # サーボモーターの動作(閉脚)
+            servo1.pulse_width_us(1370)
+            servo2.pulse_width_us(1630)
+            
+        elsif counter_for_servo == 2
+            # サーボモーターの動作(やや開く)
+            servo1.pulse_width_us(1400)
+            servo2.pulse_width_us(1600)
+            
+        elsif counter_for_servo == 3
+            counter_for_servo = -1
+        end
+        counter_for_servo += 1
+        
     elsif distance > 160
         # サーボモーターの動作(開脚)
+        counter_for_servo = 0
         servo1.pulse_width_us(1900)
         servo2.pulse_width_us(1100)
     end
