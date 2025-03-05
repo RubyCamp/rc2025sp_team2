@@ -1,11 +1,11 @@
 class Ebichan
     attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x, :counter, :ball_find
     def initialize
-      @motor1_pwm1 = PWM.new(25,timer:0,channel:1)
-      @motor1_pwm2 = PWM.new(26,timer:0,channel:2)
+      @motor1_pwm1 = PWM.new(25, timer:0, channel:1)
+      @motor1_pwm2 = PWM.new(26, timer:0, channel:2)
 
-      @motor2_pwm1 = PWM.new(32,timer:1,channel:3)
-      @motor2_pwm2 = PWM.new(33,timer:1,channel:4)
+      @motor2_pwm1 = PWM.new(32, timer:1, channel:3)
+      @motor2_pwm2 = PWM.new(33, timer:1, channel:4)
 
       @lux_right = ADC.new(35) 
       @lux_left  = ADC.new(2)
@@ -88,13 +88,13 @@ class Ebichan
         @motor2_pwm2.duty( 73 ) 
     end
     def hand_open
-        @servo1.pulse_width_us(1900)
-        @servo2.pulse_width_us(1100)
+        @servo1.pulse_width_us( 1900 )
+        @servo2.pulse_width_us( 1100 )
     end
     
     def hand_close
-        @servo1.pulse_width_us(1300)
-        @servo2.pulse_width_us(1700)
+        @servo1.pulse_width_us( 1300 )
+        @servo2.pulse_width_us( 1700 )
     end
     def read_distance
         @distance = @vl53l0x.read_range_continuous_millimeters
@@ -116,11 +116,10 @@ robotto.hand_open
 while true do
     if robotto.lux_left.read_raw < 200
 
+        robotto.fieldout = true
+        robotto.hand_open
+
         if robotto.lux_right.read_raw < 200
-
-            robotto.fieldout = true
-            robotto.hand_open
-
             # 左右とも黒
             robotto.stop
             
@@ -143,6 +142,9 @@ while true do
     else
         if robotto.lux_right.read_raw < 200
 
+            robotto.fieldout = true
+            robotto.hand_open
+
             #　左が黒ではない右が黒
             robotto.stop
             sleep 2
@@ -158,18 +160,18 @@ while true do
                 robotto.dash_mode1 
             elsif robotto.counter < 6
                 robotto.dash_mode2 
-            else
-                robotto.stop
             end
         end
     end
 
     distance = robotto.vl53l0x.read_range_continuous_millimeters
     if distance < 200 && !robotto.fieldout
+        robotto.ball_find = true
         robotto.catched = true
         robotto.hand_close
     elsif robotto.ball_find == false
         robotto.hand_open
+        #首振り
         sleep 1
         robotto.turnslow_left
         3.times do
@@ -179,6 +181,7 @@ while true do
             end
         end
         if robotto.ball_find
+            robotto.stop
             next
         end
         if robotto.lux_left.read_raw < 200
@@ -192,6 +195,7 @@ while true do
             end
         end
         if robotto.ball_find
+            robotto.stop
             next
         end
         if robotto.lux_right.read_raw < 200
