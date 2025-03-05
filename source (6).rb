@@ -1,6 +1,6 @@
 
 class Ebichan
-    attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x, :counter
+    attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x, :counter, :ball_find
     def initialize
       @motor1_pwm1 = PWM.new(25,timer:0,channel:1)
       @motor1_pwm2 = PWM.new(26,timer:0,channel:2)
@@ -20,14 +20,16 @@ class Ebichan
 
       @fieldout = false
       @catched = false
+      @ball_find = false
       @counter = 0
 
       @vl53l0x.init
-      @vl53l0x.start_continuous(1000)
+      @vl53l0x.start_continuous(500)
 
     end
     def stop
         @counter = -1
+        @ball_find = false
         
         @motor1_pwm1.duty( 50 )
         @motor1_pwm2.duty( 50 )
@@ -95,10 +97,21 @@ class Ebichan
         @servo1.pulse_width_us(1300)
         @servo2.pulse_width_us(1700)
     end
+    def read_distance
+        @distance = @vl53l0x.read_range_continuous_millimeters
+        if @distance <  2000
+            @ball_find = true
+            return true
+        else
+            return false
+        end
+    end
 end
 
 robotto = Ebichan.new
 
+robotto.turnslow_right
+sleep 0.5
 robotto.hand_open
 
 while true do
@@ -151,19 +164,34 @@ while true do
             end
         end
     end
-    
+
     distance = robotto.vl53l0x.read_range_continuous_millimeters
-    if distance < 200 && !robotto.fieldout
+    if distance < 290 && !robotto.fieldout
         robotto.catched = true
         robotto.hand_close
-    else 
+    elsif robotto.ball_find == false
         robotto.hand_open
-        sleep 1
+        sleep 1.5
         robotto.turnslow_left
-        sleep 1
+        sleep 0.5
+        if robotto.read_distance
+            next
+        end
+        sleep 0.5
+        if robotto.read_distance
+            next
+        end
         robotto.turnslow_right
-        sleep 2
+        sleep 1.5
+        if robotto.read_distance
+            next
+        end
+        sleep 1
+        if robotto.read_distance
+            next
+        end
         robotto.turnslow_left
+        sleep 1.5
     end
     sleep 1
     robotto.counter += 1
