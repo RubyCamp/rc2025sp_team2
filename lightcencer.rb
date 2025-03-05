@@ -1,5 +1,5 @@
 class Ebichan
-    atter_reader :lux_right, :lux_left
+    atter_reader :lux_right, :lux_left, :fieldout, :catched, :vl53l0xa
     def initialize
       @motor1_pwm1 = PWM.new(25)
       @motor1_pwm2 = PWM.new(26)
