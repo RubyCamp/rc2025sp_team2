@@ -26,11 +26,12 @@ while true do
             motor2_pwm2.duty( 50 )
             sleep 2
             motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 90 )
+            motor1_pwm2.duty( 100 )
 
             motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 90 )
+            motor2_pwm2.duty( 100 )
             sleep 3
+            #一旦停止
             motor1_pwm1.duty( 100 )
             motor1_pwm2.duty( 50 )
 
@@ -46,11 +47,11 @@ while true do
             motor2_pwm2.duty( 50 )
             sleep 2
             motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 90 )
+            motor1_pwm2.duty( 100 )
 
             motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 90 )
-            sleep 1
+            motor2_pwm2.duty( 100 )
+            sleep 3
             motor1_pwm1.duty( 50 ) 
             motor1_pwm2.duty( 50 ) 
           
@@ -67,22 +68,22 @@ while true do
             motor2_pwm2.duty( 50 )
             sleep 2
             motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 90 )
+            motor1_pwm2.duty( 100 )
 
             motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 90 )
-            sleep 1
+            motor2_pwm2.duty( 100 )
+            sleep 3
             motor1_pwm1.duty( 100 ) 
             motor1_pwm2.duty( 50 ) 
           
             motor2_pwm1.duty( 50 ) 
             motor2_pwm2.duty( 50 )
         else
-            #　左右とも白
-            motor1_pwm1.duty( 100 ) 
+            #　左右とも白(前進)
+            motor1_pwm1.duty( 90 ) 
             motor1_pwm2.duty( 50 ) 
           
-            motor2_pwm1.duty( 100 ) 
+            motor2_pwm1.duty( 90 ) 
             motor2_pwm2.duty( 50 ) 
         end
     end
