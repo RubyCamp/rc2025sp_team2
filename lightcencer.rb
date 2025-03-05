@@ -4,87 +4,92 @@ num = 0
     puts i.to_s + "times"
 end
 
-motor1_pwm1 = PWM.new(25)
-motor1_pwm2 = PWM.new(26)
 
-motor2_pwm1 = PWM.new(32)
-motor2_pwm2 = PWM.new(33)
 
-lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
-lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
+class Ebichan
+    def initialize
+      @motor1_pwm1 = PWM.new(25)
+      @motor1_pwm2 = PWM.new(26)
 
+      @motor2_pwm1 = PWM.new(32)
+      @motor2_pwm2 = PWM.new(33)
+
+      @lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
+      @lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
+
+    end
+    def stop
+        @motor1_pwm1.duty( 50 )
+        @motor1_pwm2.duty( 50 )
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 50 )
+
+    end
+    def back
+        @motor1_pwm1.duty( 50 )
+        @motor1_pwm2.duty( 100 )
+
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 100 )
+    end
+    def turn_left
+        @motor1_pwm1.duty( 100 )
+        @motor1_pwm2.duty( 50 )
+
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 50 )
+    end
+    def turn_right
+        @motor1_pwm1.duty( 50 ) 
+        @motor1_pwm2.duty( 50 ) 
+      
+        @motor2_pwm1.duty( 100 ) 
+        @motor2_pwm2.duty( 50 )
+    end
+    def dash
+        @motor1_pwm1.duty( 90 ) 
+        @motor1_pwm2.duty( 50 ) 
+          
+        @motor2_pwm1.duty( 90 ) 
+        @motor2_pwm2.duty( 50 ) 
+    end
+end
+
+robotto = Ebichan.new
 
 while true do
     if lux_left.read_raw < 200
         if lux_right.read_raw < 200
 
             # 左右とも黒
-            motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 50 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 50 )
+            robotto.stop
+            
             sleep 2
-            motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 100 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 100 )
+            robotto.back
             sleep 3
             #一旦停止
-            motor1_pwm1.duty( 100 )
-            motor1_pwm2.duty( 50 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 50 )
+            robotto.turn_left
 
         else 
             # 左が黒で右が白
-            motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 50 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 50 )
+            robotto.stop
             sleep 2
-            motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 100 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 100 )
+            robotto.back
             sleep 3
-            motor1_pwm1.duty( 50 ) 
-            motor1_pwm2.duty( 50 ) 
-          
-            motor2_pwm1.duty( 100 ) 
-            motor2_pwm2.duty( 50 )
+            robotto.turn_righght
         end
     else
         if lux_right.read_raw < 200
             #　左が黒ではない右が黒
-            motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 50 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 50 )
+            robotto.stop
             sleep 2
-            motor1_pwm1.duty( 50 )
-            motor1_pwm2.duty( 100 )
-
-            motor2_pwm1.duty( 50 )
-            motor2_pwm2.duty( 100 )
+            robotto.back
             sleep 3
-            motor1_pwm1.duty( 100 ) 
-            motor1_pwm2.duty( 50 ) 
-          
-            motor2_pwm1.duty( 50 ) 
-            motor2_pwm2.duty( 50 )
+            robotto.turn_left
         else
             #　左右とも白(前進)
-            motor1_pwm1.duty( 90 ) 
-            motor1_pwm2.duty( 50 ) 
-          
-            motor2_pwm1.duty( 90 ) 
-            motor2_pwm2.duty( 50 ) 
+            robotto.dash
+            
         end
     end
 
