@@ -1,5 +1,5 @@
 class Ebichan
-    atter_reader :lux_right, :lux_left, :fieldout, :catched, :vl53l0xa
+    attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0xa
     def initialize
       @motor1_pwm1 = PWM.new(25)
       @motor1_pwm2 = PWM.new(26)
@@ -60,12 +60,12 @@ class Ebichan
         @motor2_pwm2.duty( 50 ) 
     end
 
-    def open
+    def hand_open
         @servo1.pulse_width_us(1900)
         @servo2.pulse_width_us(1100)
     end
     
-    def close
+    def hand_close
         @servo1.pulse_width_us(1300)
         @servo2.pulse_width_us(1700)
     end
@@ -73,13 +73,13 @@ end
 
 robotto = Ebichan.new
 
-robotto.open
+robotto.hand_open
 
 while true do
     if robotto.lux_left.read_raw < 200
 
         robotto.fieldout = true
-        robotto.close
+        robotto.hand_open
 
         if robotto.lux_right.read_raw < 200
 
@@ -106,7 +106,7 @@ while true do
         if robotto.lux_right.read_raw < 200
 
             robotto.fieldout = true
-            robotto.close
+            robotto.hand_open
 
             #　左が黒ではない右が黒
             robotto.stop
@@ -127,9 +127,9 @@ while true do
     distance = robotto.vl53l0x.read_range_continuous_millimeters
     if distance < 150 && !robotto.fieldout
         robotto.catched = true
-        robotto.close
+        robotto.hand_close
     else 
-        robotto.open
+        robotto.hand_open
     end
     sleep 1
 end
