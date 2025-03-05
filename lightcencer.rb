@@ -30,7 +30,7 @@ while true do
 
             motor2_pwm1.duty( 40 )
             motor2_pwm2.duty( 100 )
-            sleep 4
+            sleep 5
             motor1_pwm1.duty( 100 )
             motor1_pwm2.duty( 20 )
 
@@ -49,7 +49,7 @@ while true do
 
             motor2_pwm1.duty( 40 )
             motor2_pwm2.duty( 100 )
-            sleep 4
+            sleep 5
             motor1_pwm1.duty( 50 ) 
             motor1_pwm2.duty( 50 ) 
           
@@ -70,7 +70,7 @@ while true do
 
             motor2_pwm1.duty( 40 )
             motor2_pwm2.duty( 100 )
-            sleep 4
+            sleep 5
             motor1_pwm1.duty( 100 ) 
             motor1_pwm2.duty( 30 ) 
           
