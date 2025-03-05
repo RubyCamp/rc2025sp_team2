@@ -1,13 +1,5 @@
-num = 0
-	  
-10.times do |i|
-    puts i.to_s + "times"
-end
-
-
-
 class Ebichan
-    atter_reader :lux_right, :lux_left
+    attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x
     def initialize
       @motor1_pwm1 = PWM.new(25)
       @motor1_pwm2 = PWM.new(26)
@@ -15,8 +7,21 @@ class Ebichan
       @motor2_pwm1 = PWM.new(32)
       @motor2_pwm2 = PWM.new(33)
 
-      @lux_right = ADC.new(35) # 右ライトセンサー初期化（GPIO番号: 35）
-      @lux_left  = ADC.new(2)  # 左ライトセンサー初期化（GPIO番号: 2）
+      @lux_right = ADC.new(35) 
+      @lux_left  = ADC.new(2)
+
+      @servo1 = PWM.new(27, timer: 2, channel: 5, frequency: 50) 
+      @servo2 = PWM.new(14, timer: 2, channel: 6, frequency: 50) 
+
+      @i2c = I2C.new()
+      @vl53l0x = VL53L0X.new(@i2c)
+      @vl53l0x.set_timeout(2000)
+
+      @fieldout = false
+      @catched = false
+
+      @vl53l0x.init
+      @vl53l0x.start_continuous(1000)
 
     end
     def stop
@@ -51,16 +56,32 @@ class Ebichan
         @motor1_pwm1.duty( 90 ) 
         @motor1_pwm2.duty( 50 ) 
           
-        @motor2_pwm1.duty( 90 ) 
+        @motor2_pwm1.duty( 93 ) 
         @motor2_pwm2.duty( 50 ) 
+    end
+
+    def hand_open
+        @servo1.pulse_width_us(1900)
+        @servo2.pulse_width_us(1100)
+    end
+    
+    def hand_close
+        @servo1.pulse_width_us(1300)
+        @servo2.pulse_width_us(1700)
     end
 end
 
 robotto = Ebichan.new
 
+robotto.hand_open
+
 while true do
     if robotto.lux_left.read_raw < 200
+
         if robotto.lux_right.read_raw < 200
+
+            robotto.fieldout = true
+            robotto.hand_open
 
             # 左右とも黒
             robotto.stop
@@ -78,11 +99,12 @@ while true do
             sleep 2
             robotto.back
             sleep 3
-            robotto.turn_righght
+            robotto.turn_right
 
         end
     else
         if robotto.lux_right.read_raw < 200
+
             #　左が黒ではない右が黒
             robotto.stop
             sleep 2
@@ -92,11 +114,20 @@ while true do
 
         else
             #　左右とも白(前進)
+
+            robotto.fieldout = false
             robotto.dash
             
         end
     end
-
+    
+    distance = robotto.vl53l0x.read_range_continuous_millimeters
+    if distance < 150 && !robotto.fieldout
+        robotto.catched = true
+        robotto.hand_close
+    else 
+        robotto.hand_open
+    end
     sleep 1
 end
 
