@@ -7,6 +7,7 @@ end
 
 
 class Ebichan
+    atter_reader :lux_right, :lux_left
     def initialize
       @motor1_pwm1 = PWM.new(25)
       @motor1_pwm2 = PWM.new(26)
@@ -58,8 +59,8 @@ end
 robotto = Ebichan.new
 
 while true do
-    if lux_left.read_raw < 200
-        if lux_right.read_raw < 200
+    if robotto.lux_left.read_raw < 200
+        if robotto.lux_right.read_raw < 200
 
             # 左右とも黒
             robotto.stop
@@ -79,7 +80,7 @@ while true do
             robotto.turn_righght
         end
     else
-        if lux_right.read_raw < 200
+        if robotto.lux_right.read_raw < 200
             #　左が黒ではない右が黒
             robotto.stop
             sleep 2
