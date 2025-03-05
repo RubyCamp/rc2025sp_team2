@@ -25,19 +25,17 @@ while true do
             motor2_pwm1.duty( 50 )
             motor2_pwm2.duty( 50 )
             sleep 2
-            motor1_pwm1.duty( 50 )
+            motor1_pwm1.duty( 40 )
             motor1_pwm2.duty( 100 )
 
-            motor2_pwm1.duty( 50 )
+            motor2_pwm1.duty( 40 )
             motor2_pwm2.duty( 100 )
-            sleep 3
-            #一旦停止
+            sleep 4
             motor1_pwm1.duty( 100 )
-            motor1_pwm2.duty( 50 )
+            motor1_pwm2.duty( 20 )
 
             motor2_pwm1.duty( 50 )
             motor2_pwm2.duty( 50 )
-
         else 
             # 左が黒で右が白
             motor1_pwm1.duty( 50 )
@@ -46,17 +44,17 @@ while true do
             motor2_pwm1.duty( 50 )
             motor2_pwm2.duty( 50 )
             sleep 2
-            motor1_pwm1.duty( 50 )
+            motor1_pwm1.duty( 40 )
             motor1_pwm2.duty( 100 )
 
-            motor2_pwm1.duty( 50 )
+            motor2_pwm1.duty( 40 )
             motor2_pwm2.duty( 100 )
-            sleep 3
+            sleep 4
             motor1_pwm1.duty( 50 ) 
             motor1_pwm2.duty( 50 ) 
           
             motor2_pwm1.duty( 100 ) 
-            motor2_pwm2.duty( 50 )
+            motor2_pwm2.duty( 30 )
         end
     else
         if lux_right.read_raw < 200
@@ -67,14 +65,14 @@ while true do
             motor2_pwm1.duty( 50 )
             motor2_pwm2.duty( 50 )
             sleep 2
-            motor1_pwm1.duty( 50 )
+            motor1_pwm1.duty( 40 )
             motor1_pwm2.duty( 100 )
 
-            motor2_pwm1.duty( 50 )
+            motor2_pwm1.duty( 40 )
             motor2_pwm2.duty( 100 )
-            sleep 3
+            sleep 4
             motor1_pwm1.duty( 100 ) 
-            motor1_pwm2.duty( 50 ) 
+            motor1_pwm2.duty( 30 ) 
           
             motor2_pwm1.duty( 50 ) 
             motor2_pwm2.duty( 50 )
