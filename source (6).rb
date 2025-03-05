@@ -162,6 +162,8 @@ while true do
         robotto.turnslow_left
         sleep 1
         robotto.turnslow_right
+        sleep 2
+        robotto.turnslow_left
     end
     sleep 1
     robotto.counter += 1
