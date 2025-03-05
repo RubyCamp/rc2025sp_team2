@@ -71,6 +71,7 @@ while true do
             #一旦停止
             robotto.turn_left
 
+            
         else 
             # 左が黒で右が白
             robotto.stop
@@ -78,6 +79,7 @@ while true do
             robotto.back
             sleep 3
             robotto.turn_righght
+
         end
     else
         if robotto.lux_right.read_raw < 200
@@ -87,6 +89,7 @@ while true do
             robotto.back
             sleep 3
             robotto.turn_left
+
         else
             #　左右とも白(前進)
             robotto.dash
