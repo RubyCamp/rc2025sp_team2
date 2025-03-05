@@ -1,5 +1,5 @@
 class Ebichan
-    attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0xa
+    attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x
     def initialize
       @motor1_pwm1 = PWM.new(25)
       @motor1_pwm2 = PWM.new(26)
@@ -56,7 +56,7 @@ class Ebichan
         @motor1_pwm1.duty( 90 ) 
         @motor1_pwm2.duty( 50 ) 
           
-        @motor2_pwm1.duty( 90 ) 
+        @motor2_pwm1.duty( 93 ) 
         @motor2_pwm2.duty( 50 ) 
     end
 
@@ -78,10 +78,10 @@ robotto.hand_open
 while true do
     if robotto.lux_left.read_raw < 200
 
-        robotto.fieldout = true
-        robotto.hand_open
-
         if robotto.lux_right.read_raw < 200
+
+            robotto.fieldout = true
+            robotto.hand_open
 
             # 左右とも黒
             robotto.stop
@@ -104,10 +104,7 @@ while true do
         end
     else
         if robotto.lux_right.read_raw < 200
-
-            robotto.fieldout = true
-            robotto.hand_open
-
+            
             #　左が黒ではない右が黒
             robotto.stop
             sleep 2
