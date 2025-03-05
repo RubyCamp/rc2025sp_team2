@@ -99,12 +99,12 @@ while true do
             sleep 2
             robotto.back
             sleep 3
-            robotto.turn_righght
+            robotto.turn_right
 
         end
     else
         if robotto.lux_right.read_raw < 200
-            
+
             #　左が黒ではない右が黒
             robotto.stop
             sleep 2
