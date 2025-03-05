@@ -65,11 +65,11 @@ class Ebichan
         @motor2_pwm2.duty( 50 )
     end
     def turnslow_right
-        @motor1_pwm1.duty( 100 ) 
+        @motor1_pwm1.duty( 50 ) 
         @motor1_pwm2.duty( 80 ) 
       
         @motor2_pwm1.duty( 100 ) 
-        @motor2_pwm2.duty( 50 )
+        @motor2_pwm2.duty( 80 )
     end
     
     def dash_mode1
@@ -158,7 +158,9 @@ while true do
         robotto.hand_close
     else 
         robotto.hand_open
+        sleep 1
         robotto.turnslow_left
+        sleep 1
         robotto.turnslow_right
     end
     sleep 1
