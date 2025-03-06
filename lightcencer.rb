@@ -37,8 +37,8 @@ class Ebichan
       def back; move(50, 100, 50, 100); end
       def turn_left; move(100, 50, 50, 50); end
       def turn_right; move(50, 50, 100, 50 ); end
-      def turnslow_left; move(100, 80, 50, 50); end
-      def turnslow_right; move(50, 50, 100, 80); end
+      def turnslow_left; move(100, 77, 50, 50); end
+      def turnslow_right; move(50, 50, 100, 77); end
       def dash; move(100, 70, 100, 67); end
       def dash2; move(100, 60, 100, 57); end
     def hand_open
@@ -59,6 +59,27 @@ class Ebichan
             return false
         end
     end
+    def send_data (now_pos_kani_x,now_pos_kani_y,now_ang_kani,now_pos_ball_x,now_pos_ball_y,now_ang_ball)
+        #if wlan.connected?
+        
+          #192.168.6.31落合 
+          HTTP.get( "http://192.168.6.31:3000/angle?op=abs&value=#{now_ang_kani}&target=Kani1")
+          HTTP.get( "http://192.168.6.31:3000/position?op=abs&x=#{now_pos_kani_x}&y=#{now_pos_kani_y}&target=Kani1")
+          
+          HTTP.get( "http://192.168.6.31:3000/angle?op=abs&value=#{now_ang_ball}&target=Ball")
+          HTTP.get( "http://192.168.6.31:3000/position?op=abs&x=#{now_pos_ball_x}&y=#{now_pos_ball_y}&target=Ball")
+          
+          
+          #192.168.6.22藤田
+          #HTTP.get( "http://192.168.6.22:3000/angle?op=abs&value=#{now_ang_kani}&target=Kani1")
+          #HTTP.get( "http://192.168.6.22:3000/position?op=abs&x=#{now_pos_kani_x}&y=#{now_pos_kani_y}&target=Kani1")
+          
+          #HTTP.get( "http://192.168.6.22:3000/angle?op=abs&value=#{now_ang_ball}&target=Ball")
+          #HTTP.get( "http://192.168.6.22:3000/position?op=abs&x=#{now_pos_ball_x}&y=#{now_pos_ball_y}&target=Ball")
+          
+          sleep 0.1
+        #end
+      end
 end
 
 robotto = Ebichan.new
@@ -126,15 +147,17 @@ while true do
 
     distance = robotto.vl53l0x.read_range_continuous_millimeters
     if distance < 200 && !robotto.fieldout
+        robotto.hand_close
+        if !robotto.catched
+            robotto.dash2
+            sleep (1.5)
+        end
         robotto.ball_find = true
         robotto.catched = true
-        robotto.hand_close
-        robotto.dash2
-        sleep (1.5)
-    elsif robotto.ball_find == false && robotto.counter % 2 == 0
+    elsif robotto.ball_find == false
         robotto.hand_open
         #首振り
-        sleep 1
+        sleep 3
         robotto.turnslow_left
         5.times do
             sleep 1
@@ -170,7 +193,7 @@ while true do
             next
         end
         robotto.turnslow_left
-        sleep 3
+        sleep 2
     end
     sleep 1
     robotto.counter += 1
