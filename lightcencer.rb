@@ -192,7 +192,7 @@ while true do
             robotto.stop
             next
         end
-        if robotto.lux_left.read_raw < 200
+        if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === red_range_left
             robotto.turnslow_right
         end
         robotto.turnslow_right
