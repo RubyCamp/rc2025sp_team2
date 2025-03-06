@@ -115,13 +115,16 @@ robotto.hand_open
 
 first_loop = true
 
+red_range_left = (1350..1450)
+red_range_right = (1900..2050)
+
 while true do
-    if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === (1350..1450)
+    if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === red_range_left
 
         robotto.fieldout = true
         robotto.hand_open
 
-        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === (1900..2050)
+        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === red_range_right
             # 左右とも黒
             robotto.stop
             
@@ -142,7 +145,7 @@ while true do
 
         end
     else
-        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === (1900..2050)
+        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === red_range_right
 
             robotto.fieldout = true
             robotto.hand_open
@@ -194,7 +197,7 @@ while true do
             robotto.stop
             next
         end
-        if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === (1350..1450)
+        if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === red_range_left
             robotto.turnslow_right
         end
         robotto.turnslow_right
@@ -209,7 +212,7 @@ while true do
             robotto.stop
             next
         end
-        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === (1900..2050)
+        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === red_range_right
             robotto.trunslow_left
         end
         if robotto.read_distance
