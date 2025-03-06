@@ -158,6 +158,7 @@ while true do
                 robotto.stop
                 robotto.ball_find = false
             end
+        end
     end
     if robotto.lux_left.read_raw < 200
 
