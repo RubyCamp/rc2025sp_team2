@@ -1,4 +1,3 @@
-
 class Ebichan
     attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x, :counter, :ball_find
     def initialize
@@ -27,66 +26,21 @@ class Ebichan
       @vl53l0x.start_continuous(500)
 
     end
-    def stop
-        @counter = 0
-        
-        @motor1_pwm1.duty( 50 )
-        @motor1_pwm2.duty( 50 )
-        @motor2_pwm1.duty( 50 )
-        @motor2_pwm2.duty( 50 )
+    def move(m1p1,m1p2,m2p1, m2p2)
+        @motor1_pwm1.duty(m1p1)
+        @motor1_pwm2.duty(m1p2)
+        @motor2_pwm1.duty(m2p1)
+        @motor2_pwm2.duty(m2p2)
+    end
 
-    end
-    def back
-        @motor1_pwm1.duty( 50 )
-        @motor1_pwm2.duty( 100 )
-
-        @motor2_pwm1.duty( 50 )
-        @motor2_pwm2.duty( 100 )
-    end
-    def turn_left
-        @motor1_pwm1.duty( 100 )
-        @motor1_pwm2.duty( 50 )
-
-        @motor2_pwm1.duty( 50 )
-        @motor2_pwm2.duty( 50 )
-    end
-    def turn_right
-        @motor1_pwm1.duty( 50 ) 
-        @motor1_pwm2.duty( 50 ) 
-      
-        @motor2_pwm1.duty( 100 ) 
-        @motor2_pwm2.duty( 50 )
-    end
-   
-    def turnslow_left
-        @motor1_pwm1.duty( 100 )
-        @motor1_pwm2.duty( 80 )
-
-        @motor2_pwm1.duty( 50 )
-        @motor2_pwm2.duty( 50 )
-    end
-    def turnslow_right
-        @motor1_pwm1.duty( 50 ) 
-        @motor1_pwm2.duty( 50 ) 
-      
-        @motor2_pwm1.duty( 100 ) 
-        @motor2_pwm2.duty( 80 )
-    end
-    
-    def dash_mode1
-        @motor1_pwm1.duty( 100 ) 
-        @motor1_pwm2.duty( 70 ) 
-          
-        @motor2_pwm1.duty( 100 ) 
-        @motor2_pwm2.duty( 67 ) 
-    end
-    def dash_mode2
-        @motor1_pwm1.duty( 100 ) 
-        @motor1_pwm2.duty( 70 ) 
-          
-        @motor2_pwm1.duty( 100 ) 
-        @motor2_pwm2.duty( 73 ) 
-    end
+      def stop; move(50, 50, 50, 50); end
+      def back; move(50, 100, 50, 100); end
+      def turn_left; move(100, 50, 50, 50); end
+      def turn_right; move(50, 50, 100, 50 ); end
+      def turnslow_left; move(100, 80, 50, 50); end
+      def turnslow_right; move(50, 50, 100, 80); end
+      def dash; move(100, 70, 100, 67); end
+      def dash2; move(100, 60, 100, 57); end
     def hand_open
         @servo1.pulse_width_us( 1900 )
         @servo2.pulse_width_us( 1100 )
@@ -157,16 +111,14 @@ while true do
             robotto.fieldout = false
             
             if !first_loop
-                if robotto.counter < 2
-                    robotto.dash_mode1 
-                else robotto.counter 
-                    robotto.dash_mode2 
-                end
-                if robotto.counter >  3 && !robotto.catched && robotto.ball_find
-                    robotto.stop
+                    robotto.dash
+                if robotto.counter >  4 && !robotto.catched && robotto.ball_find
+                    robotto.counter = -1
                     robotto.ball_find = false
                 end
             else
+                robotto.turnslow_right
+                sleep 2
                 first_loop = false
             end
         end
@@ -177,6 +129,8 @@ while true do
         robotto.ball_find = true
         robotto.catched = true
         robotto.hand_close
+        robotto.dash2
+        sleep (1.5)
     elsif robotto.ball_find == false && robotto.counter % 2 == 0
         robotto.hand_open
         #首振り
@@ -189,14 +143,15 @@ while true do
             end
         end
         if robotto.ball_find
-            robotto.stop
+            robotto.counter = -1
             next
         end
-        if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === red_range_left
+        if robotto.lux_left.read_raw < 200
             robotto.turnslow_right
+            sleep 1
         end
         robotto.turnslow_right
-        sleep 4
+        sleep 3
         6.times do
             sleep 1
             if robotto.read_distance
@@ -204,11 +159,12 @@ while true do
             end
         end
         if robotto.ball_find
-            robotto.stop
+            robotto.counter = -1
             next
         end
         if robotto.lux_right.read_raw < 200 
-            robotto.trunslow_left
+            robotto.turnslow_left
+            sleep 1
         end
         if robotto.read_distance
             next
