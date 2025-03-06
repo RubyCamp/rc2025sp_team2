@@ -1,0 +1,21 @@
+def send_data (now_pos_kani_x,now_pos_kani_y,now_ang_kani,now_pos_ball_x,now_pos_ball_y,now_ang_ball)
+  #if wlan.connected?
+  
+    #192.168.6.31落合 
+    HTTP.get( "http://192.168.6.31:3000/angle?op=abs&value=#{now_ang_kani}&target=Kani1")
+    HTTP.get( "http://192.168.6.31:3000/position?op=abs&x=#{now_pos_kani_x}&y=#{now_pos_kani_y}&target=Kani1")
+    
+    HTTP.get( "http://192.168.6.31:3000/angle?op=abs&value=#{now_ang_ball}&target=Ball")
+    HTTP.get( "http://192.168.6.31:3000/position?op=abs&x=#{now_pos_ball_x}&y=#{now_pos_ball_y}&target=Ball")
+    
+    
+    #192.168.6.22藤田
+    #HTTP.get( "http://192.168.6.22:3000/angle?op=abs&value=#{now_ang_kani}&target=Kani1")
+    #HTTP.get( "http://192.168.6.22:3000/position?op=abs&x=#{now_pos_kani_x}&y=#{now_pos_kani_y}&target=Kani1")
+    
+    #HTTP.get( "http://192.168.6.22:3000/angle?op=abs&value=#{now_ang_ball}&target=Ball")
+    #HTTP.get( "http://192.168.6.22:3000/position?op=abs&x=#{now_pos_ball_x}&y=#{now_pos_ball_y}&target=Ball")
+    
+    sleep 0.1
+  #end
+end
