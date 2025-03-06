@@ -28,7 +28,7 @@ class Ebichan
 
     end
     def stop
-        @counter = -1
+        @counter = 0
         
         @motor1_pwm1.duty( 50 )
         @motor1_pwm2.duty( 50 )
@@ -113,59 +113,15 @@ robotto.turnslow_right
 sleep 2
 robotto.hand_open
 
+first_loop = true
+
 while true do
-    if robotto.lux_left.read_raw == (1350..1450)
-        if robotto.lux_right.read_raw == (1900..2050)
-            # 左右とも赤かつボール無し
-            robotto.stop
-
-            sleep 2
-            robotto.back
-            sleep 3
-            robotto.turn_left
-        else
-            # 左が赤で右が白
-            robotto.stop
-            sleep 2
-            robotto.back
-            sleep 3
-            robotto.turn_right
-
-        end
-    else
-        if robotto.lux_right.read_raw == (1900..2050)
-
-            robotto.fieldout = true
-            robotto.hand_open
-
-            #　左が赤ではない右が赤
-            robotto.stop
-            sleep 2
-            robotto.back
-            sleep 3
-            robotto.turn_left
-
-        else
-            #　左右とも白(前進)
-            robotto.fieldout = false
-            
-            if robotto.counter < 2
-                robotto.dash_mode1 
-            else robotto.counter 
-                robotto.dash_mode2 
-            end
-            if robotto.counter > 2 && !robotto.catched && robotto.ball_find
-                robotto.stop
-                robotto.ball_find = false
-            end
-        end
-    end
-    if robotto.lux_left.read_raw < 200
+    if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === (1350..1450)
 
         robotto.fieldout = true
         robotto.hand_open
 
-        if robotto.lux_right.read_raw < 200
+        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === (1900..2050)
             # 左右とも黒
             robotto.stop
             
@@ -186,7 +142,7 @@ while true do
 
         end
     else
-        if robotto.lux_right.read_raw < 200
+        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === (1900..2050)
 
             robotto.fieldout = true
             robotto.hand_open
@@ -202,14 +158,18 @@ while true do
             #　左右とも白(前進)
             robotto.fieldout = false
             
-            if robotto.counter < 2
-                robotto.dash_mode1 
-            else robotto.counter 
-                robotto.dash_mode2 
-            end
-            if robotto.counter > 2 && !robotto.catched && robotto.ball_find
-                robotto.stop
-                robotto.ball_find = false
+            if !firstloop
+                if robotto.counter < 2
+                    robotto.dash_mode1 
+                else robotto.counter 
+                    robotto.dash_mode2 
+                end
+                if robotto.counter >  3 && !robotto.catched && robotto.ball_find
+                    robotto.stop
+                    robotto.ball_find = false
+                end
+            else
+                firstloop = false
             end
         end
     end
@@ -234,7 +194,7 @@ while true do
             robotto.stop
             next
         end
-        if robotto.lux_left.read_raw < 200
+        if robotto.lux_left.read_raw < 200 || robotto.lux_left.read_raw === (1350..1450)
             robotto.turnslow_right
         end
         robotto.turnslow_right
@@ -249,7 +209,7 @@ while true do
             robotto.stop
             next
         end
-        if robotto.lux_right.read_raw < 200
+        if robotto.lux_right.read_raw < 200 || robotto.lux_right.read_raw === (1900..2050)
             robotto.trunslow_left
         end
         if robotto.read_distance
