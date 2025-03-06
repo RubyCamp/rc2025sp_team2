@@ -1,4 +1,8 @@
 class Ebichan
+    
+    wlan = WLAN.new('STA')
+    wlan.connect("RubyCamp", "shimanekko")
+
     attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x, :counter, :ball_find
     def initialize
       @motor1_pwm1 = PWM.new(25, timer:0, channel:1)

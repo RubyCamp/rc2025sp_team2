@@ -26,21 +26,66 @@ class Ebichan
       @vl53l0x.start_continuous(500)
 
     end
-    def move(m1p1,m1p2,m2p1, m2p2)
-        @motor1_pwm1.duty(m1p1)
-        @motor1_pwm2.duty(m1p2)
-        @motor2_pwm1.duty(m2p1)
-        @motor2_pwm2.duty(m2p2)
-    end
+    def stop
+        @counter = 0
+        
+        @motor1_pwm1.duty( 50 )
+        @motor1_pwm2.duty( 50 )
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 50 )
 
-      def stop; move(50, 50, 50, 50); end
-      def back; move(50, 100, 50, 100); end
-      def turn_left; move(100, 50, 50, 50); end
-      def turn_right; move(50, 50, 100, 50 ); end
-      def turnslow_left; move(100, 77, 50, 50); end
-      def turnslow_right; move(50, 50, 100, 77); end
-      def dash; move(100, 70, 100, 67); end
-      def dash2; move(100, 60, 100, 57); end
+    end
+    def back
+        @motor1_pwm1.duty( 50 )
+        @motor1_pwm2.duty( 100 )
+
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 100 )
+    end
+    def turn_left
+        @motor1_pwm1.duty( 100 )
+        @motor1_pwm2.duty( 50 )
+
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 50 )
+    end
+    def turn_right
+        @motor1_pwm1.duty( 50 ) 
+        @motor1_pwm2.duty( 50 ) 
+      
+        @motor2_pwm1.duty( 100 ) 
+        @motor2_pwm2.duty( 50 )
+    end
+   
+    def turnslow_left
+        @motor1_pwm1.duty( 100 )
+        @motor1_pwm2.duty( 80 )
+
+        @motor2_pwm1.duty( 50 )
+        @motor2_pwm2.duty( 50 )
+    end
+    def turnslow_right
+        @motor1_pwm1.duty( 50 ) 
+        @motor1_pwm2.duty( 50 ) 
+      
+        @motor2_pwm1.duty( 100 ) 
+        @motor2_pwm2.duty( 80 )
+    end
+    
+    def dash_mode1
+        @motor1_pwm1.duty( 100 ) 
+        @motor1_pwm2.duty( 70 ) 
+          
+        @motor2_pwm1.duty( 100 ) 
+        @motor2_pwm2.duty( 67 ) 
+    end
+    def dash_mode2
+        @motor1_pwm1.duty( 100 ) 
+        @motor1_pwm2.duty( 70 ) 
+          
+        @motor2_pwm1.duty( 100 ) 
+        @motor2_pwm2.duty( 73 ) 
+    end
     def hand_open
         @servo1.pulse_width_us( 1900 )
         @servo2.pulse_width_us( 1100 )
@@ -59,27 +104,6 @@ class Ebichan
             return false
         end
     end
-    def send_data (now_pos_kani_x,now_pos_kani_y,now_ang_kani,now_pos_ball_x,now_pos_ball_y,now_ang_ball)
-        #if wlan.connected?
-        
-          #192.168.6.31落合 
-          HTTP.get( "http://192.168.6.31:3000/angle?op=abs&value=#{now_ang_kani}&target=Kani1")
-          HTTP.get( "http://192.168.6.31:3000/position?op=abs&x=#{now_pos_kani_x}&y=#{now_pos_kani_y}&target=Kani1")
-          
-          HTTP.get( "http://192.168.6.31:3000/angle?op=abs&value=#{now_ang_ball}&target=Ball")
-          HTTP.get( "http://192.168.6.31:3000/position?op=abs&x=#{now_pos_ball_x}&y=#{now_pos_ball_y}&target=Ball")
-          
-          
-          #192.168.6.22藤田
-          #HTTP.get( "http://192.168.6.22:3000/angle?op=abs&value=#{now_ang_kani}&target=Kani1")
-          #HTTP.get( "http://192.168.6.22:3000/position?op=abs&x=#{now_pos_kani_x}&y=#{now_pos_kani_y}&target=Kani1")
-          
-          #HTTP.get( "http://192.168.6.22:3000/angle?op=abs&value=#{now_ang_ball}&target=Ball")
-          #HTTP.get( "http://192.168.6.22:3000/position?op=abs&x=#{now_pos_ball_x}&y=#{now_pos_ball_y}&target=Ball")
-          
-          sleep 0.1
-        #end
-      end
 end
 
 robotto = Ebichan.new
@@ -132,14 +156,18 @@ while true do
             robotto.fieldout = false
             
             if !first_loop
-                    robotto.dash
-                if robotto.counter >  4 && !robotto.catched && robotto.ball_find
-                    robotto.counter = -1
+                if robotto.counter < 2
+                    robotto.dash_mode1 
+                else robotto.counter 
+                    robotto.dash_mode2 
+                end
+                if robotto.counter >  3 && !robotto.catched && robotto.ball_find
+                    robotto.stop
                     robotto.ball_find = false
                 end
             else
                 robotto.turnslow_right
-                sleep 2
+                sleep 3
                 first_loop = false
             end
         end
@@ -147,17 +175,13 @@ while true do
 
     distance = robotto.vl53l0x.read_range_continuous_millimeters
     if distance < 200 && !robotto.fieldout
-        robotto.hand_close
-        if !robotto.catched
-            robotto.dash2
-            sleep (1.5)
-        end
         robotto.ball_find = true
         robotto.catched = true
-    elsif robotto.ball_find == false
+        robotto.hand_close
+    elsif robotto.ball_find == false && robotto.counter % 2 == 0
         robotto.hand_open
         #首振り
-        sleep 3
+        sleep 1
         robotto.turnslow_left
         5.times do
             sleep 1
@@ -166,15 +190,14 @@ while true do
             end
         end
         if robotto.ball_find
-            robotto.counter = -1
+            robotto.stop
             next
         end
         if robotto.lux_left.read_raw < 200
             robotto.turnslow_right
-            sleep 1
         end
         robotto.turnslow_right
-        sleep 3
+        sleep 4
         6.times do
             sleep 1
             if robotto.read_distance
@@ -182,18 +205,17 @@ while true do
             end
         end
         if robotto.ball_find
-            robotto.counter = -1
+            robotto.stop
             next
         end
         if robotto.lux_right.read_raw < 200 
-            robotto.turnslow_left
-            sleep 1
+            robotto.trunslow_left
         end
         if robotto.read_distance
             next
         end
         robotto.turnslow_left
-        sleep 2
+        sleep 3
     end
     sleep 1
     robotto.counter += 1
