@@ -1,0 +1,126 @@
+require 'http'
+
+class Ebichan
+  attr_accessor :lux_right, :lux_left, :fieldout, :catched, :vl53l0x, :counter, :ball_find
+
+  def initialize
+    @motor1_pwm1 = PWM.new(25, timer:0, channel:1)
+    @motor1_pwm2 = PWM.new(26, timer:0, channel:2)
+
+    @motor2_pwm1 = PWM.new(32, timer:1, channel:3)
+    @motor2_pwm2 = PWM.new(33, timer:1, channel:4)
+
+    @lux_right = ADC.new(35) 
+    @lux_left  = ADC.new(2)
+
+    @servo1 = PWM.new(27, timer: 2, channel: 5, frequency: 50) 
+    @servo2 = PWM.new(14, timer: 2, channel: 6, frequency: 50) 
+
+    @i2c = I2C.new()
+    @vl53l0x = VL53L0X.new(@i2c)
+    @vl53l0x.set_timeout(2000)
+
+    @fieldout = false
+    @catched = false
+    @ball_find = false
+    @counter = 0
+
+    # WiFi設定
+    @wlan = WLAN.new('STA')
+    @wlan.connect("RubyCamp", "shimanekko")
+
+    # 初期位置
+    @now_pos_kani_x = 690
+    @now_pos_kani_y = 100
+    @now_ang_kani = 180
+    @now_pos_ball_x = 400
+    @now_pos_ball_y = 450
+    @now_ang_ball = 0
+
+    @vl53l0x.init
+    @vl53l0x.start_continuous(500)
+  end
+
+  # WiFiが接続されている場合にデータを送信
+  def send_data
+    return unless @wlan.connected?
+
+    HTTP.get("http://192.168.6.31:3000/angle?op=abs&value=#{@now_ang_kani}&target=Kani1")
+    HTTP.get("http://192.168.6.31:3000/position?op=abs&x=#{@now_pos_kani_x}&y=#{@now_pos_kani_y}&target=Kani1")
+
+    HTTP.get("http://192.168.6.31:3000/angle?op=abs&value=#{@now_ang_ball}&target=Ball")
+    HTTP.get("http://192.168.6.31:3000/position?op=abs&x=#{@now_pos_ball_x}&y=#{@now_pos_ball_y}&target=Ball")
+
+    sleep 0.1
+  end
+
+  def move(m1p1, m1p2, m2p1, m2p2)
+    @motor1_pwm1.duty(m1p1)
+    @motor1_pwm2.duty(m1p2)
+    @motor2_pwm1.duty(m2p1)
+    @motor2_pwm2.duty(m2p2)
+
+    # ロボットの座標を更新
+    update_position(m1p1, m1p2, m2p1, m2p2)
+    send_data
+  end
+
+  def update_position(m1p1, m1p2, m2p1, m2p2)
+    # 例: 前進したらY座標を増やす（モーター制御の動作に合わせる）
+    if m1p1 > m1p2 && m2p1 > m2p2
+      @now_pos_kani_y += 10
+    elsif m1p1 < m1p2 && m2p1 < m2p2
+      @now_pos_kani_y -= 10
+    elsif m1p1 > m2p1
+      @now_pos_kani_x += 10
+    else
+      @now_pos_kani_x -= 10
+    end
+  end
+
+  def stop; move(50, 50, 50, 50); end
+  def back; move(50, 100, 50, 100); end
+  def turn_left; move(100, 50, 50, 50); @now_ang_kani -= 45; send_data; end
+  def turn_right; move(50, 50, 100, 50); @now_ang_kani += 45; send_data; end
+  def turnslow_left; move(100, 80, 50, 50); end
+  def turnslow_right; move(50, 50, 100, 80); end
+  def dash; move(100, 70, 100, 67); end
+
+  def hand_open
+    @servo1.pulse_width_us(1900)
+    @servo2.pulse_width_us(1100)
+  end
+
+  def hand_close
+    @servo1.pulse_width_us(1300)
+    @servo2.pulse_width_us(1700)
+  end
+
+  def read_distance
+    @distance = @vl53l0x.read_range_continuous_millimeters
+    if @distance < 800
+      @ball_find = true
+      return true
+    else
+      return false
+    end
+  end
+end
+
+# ロボットのインスタンスを作成
+robotto = Ebichan.new
+robotto.hand_open
+
+# 無限ループで動作
+while true do
+  robotto.dash
+  sleep 1
+
+  # ボールが近づいたら掴む
+  if robotto.read_distance
+    robotto.hand_close
+    robotto.send_data
+  end
+
+  robotto.counter += 1
+end
