@@ -117,7 +117,7 @@ while true do
                     robotto.ball_find = false
                 elsif robotto.counter % 8 == 0 && !robotto.ball_find && robotto.counter > 0
                     robotto.back
-                    sleep 10
+                    sleep 8
                     robotto.dash
                 else
                     robotto.dash
